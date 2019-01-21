@@ -67,8 +67,3 @@ chrome$close()
 rD$server$stop()
 
 
-
-
-
-url <- "https://en.wikipedia.org/wiki/List_of_hip_hop_musicians"
-p <- readLines(url)
