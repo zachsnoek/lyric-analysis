@@ -51,14 +51,31 @@ webElems <- chrome$findElements(using = "xpath", value = "//*[@id='mw-content-te
 artist_names <- unlist(lapply(webElems, function(x){x$getElementText()}))
 print(artist_names)
 
-# Remove escape characters from artist names
-# gsub("\\\", "",perl=T)
+for (i in 1:length(artist_names)) {
+  # Remove backslashes from artist names
+  #artist_names[i] <- gsub("([\\])", "", artist_names[i])
+  #artist_names[i] <- gsub("\\\\", "", artist_names[i], perl=TRUE)
+  #artist_names[i] <- gsub("\\", "", artist_names[i], fixed=TRUE)
+  
+  # Remove reference numbers from artist names
+  artist_names[i] <- gsub("\\[\\d\\]", "", artist_names[i])
+  
+  print(artist_names[i])
+}
 
-# Remove reference numbers from artist names
-# gsub("\\[\\d\\]", "",perl=T)
+# Remove artists with parentheticals in heading
+grep("\\(|\\)", artist_names, value = TRUE)
+
+# Remove last 3 entries
+
+print(artist_names)
+
+# Construct genius.com artist page urls
 
 # important to always run these to close out the browser and server
 # forgetting to stop the server will give you a 'port already in use' 
 # error the next time you try to start a browser
 chrome$close()
 rD$server$stop()
+
+# Loop through each url and see if exists
