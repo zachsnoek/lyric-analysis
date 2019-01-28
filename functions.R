@@ -1,6 +1,6 @@
 # functions.R - Matt Sandgren and Zach Snoek
 
-# port in use error?
+# Port in use error?
 # https://stackoverflow.com/questions/43991498/rselenium-server-signals-port-is-already-in-use
 
 # RSelenium docs
@@ -11,71 +11,53 @@ install.packages("RSelenium")
 library(tidyverse)
 library(RSelenium)
 
-# start a selnium server and client
-# set chrome as the client part. chrome is what we'll use to navigate around
+# Start a Selenium server and client; set Chrome as the client port
 rD <- rsDriver(verbose = FALSE, port = 4444L, browser = "chrome")
 chrome <- rD$client
 
-# go to a URL this way
-chrome$navigate("http://www.google.com")
-chrome$navigate("http://genius.com/verified-artists")
-
-# this read the raw html page source. If we want to do a bunch of regex to extract
-# what we need we could do this
-chrome$getPageSource()
-
-#one way to pick out element(s) of a page. the webElems vector is objects
-# that can be used to click links and navigate around. 
-# The unlist command on the second line is just retrieving the element text part of those
-# objects, useful for putting artist name, URLs, album title, or whatever in a dataframe
-webElems <- chrome$findElements(using = "class", value = "user_details")
-unlist(lapply(webElems, function(x){x$getElementText()}))
-
-#go to lin's page
-webElems[[14]]$clickElement()
-
-chrome$goBack()
-
-#getting the artists using xpath instead of class
-webElems <- chrome$findElements(using = "xpath", value = "//*[@id='main']/div")
-unlist(lapply(webElems, function(x){x$getElementText()}))
-
-#gets artist page URLs
-# well, it worked yesterday but it broke
-# unlist(lapply(webElems, function(x){x$getElementAttribute('href')}))
-
-#get wikipedias list of hiphop musicians
+# Get Wikipedia's list of hip hop musicians
 chrome$navigate("https://en.wikipedia.org/wiki/List_of_hip_hop_musicians")
 webElems <- chrome$findElements(using = "xpath", value = "//*[@id='mw-content-text']/div/div/ul/li")
-
 artist_names <- unlist(lapply(webElems, function(x){x$getElementText()}))
-print(artist_names)
 
+# Format artist names for URLs
 for (i in 1:length(artist_names)) {
-  # Remove backslashes from artist names
-  #artist_names[i] <- gsub("([\\])", "", artist_names[i])
-  #artist_names[i] <- gsub("\\\\", "", artist_names[i], perl=TRUE)
-  #artist_names[i] <- gsub("\\", "", artist_names[i], fixed=TRUE)
+  # Remove escaped double quotes
+  artist_names[i] <- gsub("\"", "", artist_names[i])
   
-  # Remove reference numbers from artist names
+  # Remove Wiki reference numbers
   artist_names[i] <- gsub("\\[\\d\\]", "", artist_names[i])
   
-  print(artist_names[i])
+  artist_names[i] <- gsub("\\.", "", artist_names[i])
+  artist_names[i] <- gsub("\'", "", artist_names[i])
 }
 
 # Remove artists with parentheticals in heading
-grep("\\(|\\)", artist_names, value = TRUE)
+paren <- grep("\\(|\\)", artist_names)
+artist_names = artist_names[-paren]
 
-# Remove last 3 entries
-
-print(artist_names)
+# Remove last 3 entries (Wiki headings)
+artist_names <- artist_names[1:(length(artist_names)-3)]
 
 # Construct genius.com artist page urls
+artist_page <- "https://genius.com/artists/" # Every Genius artist page is found in /artists
 
-# important to always run these to close out the browser and server
-# forgetting to stop the server will give you a 'port already in use' 
+urls = c()
+
+for (i in 1:length(artist_names)) {
+  # Probably not the right way to do this in R
+  name <- gsub(" ", "-", artist_names[i])
+  name <- paste(artist_page, name, sep = "")
+  urls <- c(urls, name)
+}
+
+urls
+
+# Try/catch for URLs
+failed = c()
+
+# Always run these to close out the browser and server.
+# Forgetting to stop the server will give you a 'port already in use' 
 # error the next time you try to start a browser
 chrome$close()
 rD$server$stop()
-
-# Loop through each url and see if exists
