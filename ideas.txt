@@ -1,0 +1,4 @@
+- First appearance of a word before its usage increases above a threshold
+- Most used words in Grammy-winning and Billboard Top 100 songs/albums
+- Trends of sepcific words or themes in all songs and in individual artists
+- Relationship between lexicon and geographical location
