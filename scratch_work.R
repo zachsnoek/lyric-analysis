@@ -41,3 +41,18 @@ lyrics_df <- lyrics_df %>%
   count(word, sort = TRUE)
 
 lyrics_df
+library(data.table)
+library(dplyr)
+
+#setwd("/Users/zacharysnoek/Programming/r")
+fwrite(lyricsDB, "test_set.csv", row.names = FALSE)
+
+# set your working directory before reading
+foo <- fread("test_set.csv", sep2 = "|")
+foo[, collaborators := NULL]
+
+foo <- foo %>% 
+  mutate(lyrics = gsub("\\[.*\\]", "", lyrics)) %>%
+  mutate(lyrics = gsub("\\(.*\\)", "", lyrics))
+
+foo

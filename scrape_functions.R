@@ -141,8 +141,8 @@ make_artist_urls <- function(browser) {
 #---------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 page_found <- function(browser) {
-
-    webElems <- browser$findElements(
+  
+  webElems <- browser$findElements(
     using = "class",
     value = "render_404-headline"
   )
@@ -186,7 +186,7 @@ get_albums <- function(browser, artist_page) {
   #go to an artist page
   message("Going to ", artist, " artist page...")
   browser$navigate(artist_page)
-  Sys.sleep(12)
+  Sys.sleep(15)
   
   # return false if the page wasn't found
   if(!page_found(browser)) {
@@ -208,7 +208,7 @@ get_albums <- function(browser, artist_page) {
   
   # unlist(lapply(webElem, function(x){x$getElementText()}))
   webElem[[1]]$clickElement()
-  Sys.sleep(7)
+  Sys.sleep(15)
   
   #get album URLs
   webElems <- browser$findElements(
@@ -264,7 +264,7 @@ get_albums <- function(browser, artist_page) {
 #---------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 get_songs <- function(browser, album_page) {
-
+  
   # album name for a fancy message  
   album <- 
     album_page %>% 
@@ -274,7 +274,7 @@ get_songs <- function(browser, album_page) {
   #go to an artist page
   message("Going to ", album, " album page...")
   browser$navigate(album_page)
-  Sys.sleep(10)
+  Sys.sleep(15)
   
   # return false if the page wasn't found
   if(!page_found(browser)) {
@@ -332,16 +332,16 @@ get_songs <- function(browser, album_page) {
 #---------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 get_song_info <- function(browser, song_page) {
-
+  
   artist_song <- 
     song_page %>% 
     str_extract(., "([^\\/]+$)") %>%
     gsub("-", " ", .)
   message("Getting ", artist_song, "...")
-
+  
   browser$navigate(song_page)
-  Sys.sleep(7)
-
+  Sys.sleep(15)
+  
   # return false if the page wasn't found
   if(!page_found(browser)) {
     message("Song not found; returned FALSE")
@@ -355,77 +355,93 @@ get_song_info <- function(browser, song_page) {
     using = "class",
     value = "lyrics"
   )
+  
+  lyrics <- 
+    unlist(lapply(webElems, function(x){x$getElementText()})) %>% 
+    strsplit(., "\\n") %>% 
+    unlist() %>% 
+    paste(., collapse = " ")
+  
+  unreleased <- "Lyrics for this song have yet to be released. Please check back once the song has been released."
+  if(lyrics == unreleased){
+    return(FALSE)
+  }
+  
+  #------------------------------------------------
+  # get song title
+  #------------------------------------------------
+  webElem <- browser$findElement(
+    using = "class",
+    value = "header_with_cover_art-primary_info-title"
+  )
+  title <- 
+    webElem$getElementText() %>%
+    unlist()
+  
+  
+  #------------------------------------------------
+  # get actual artist
+  # some albums are collabs, with multiple artists
+  # can't assume they're all by the same one
+  #------------------------------------------------
+  webElem <- browser$findElement(
+    using = "xpath",
+    value = "/html/body/routable-page/ng-outlet/song-page/div/div/header-with-cover-art/div/div/div[1]/div[2]/div/h2/span/a"
+  )
+  actual_artist <- 
+    webElem$getElementText() %>%
+    unlist()
+  
+  
+  
+  #------------------------------------------------
+  # get collaborators, if any
+  #------------------------------------------------
+  #check to see if there are any collaborators
+  webElems <- browser$findElements(
+    using = "class",
+    value = "metadata_unit-label"
+  )
+  available_info <- unlist(lapply(webElems, function(x){x$getElementText()}))
+  
+  if("Featuring" %in% available_info) {
     
-    lyrics <- 
-      unlist(lapply(webElems, function(x){x$getElementText()})) %>% 
-      strsplit(., "\\n") %>% 
-      unlist() %>% 
-      paste(., collapse = " ")
-    
-    unreleased <- "Lyrics for this song have yet to be released. Please check back once the song has been released."
-    if(lyrics == unreleased){
-      return(FALSE)
-    }
-    
-    #------------------------------------------------
-    # get song title
-    #------------------------------------------------
-    webElem <- browser$findElement(
-      using = "class",
-      value = "header_with_cover_art-primary_info-title"
-    )
-    title <- 
-      webElem$getElementText() %>%
-      unlist()
-    
-    
-    #------------------------------------------------
-    # get collaborators, if any
-    #------------------------------------------------
-    #check to see if there are any collaborators
-    webElems <- browser$findElements(
-      using = "class",
-      value = "metadata_unit-label"
-    )
-    available_info <- unlist(lapply(webElems, function(x){x$getElementText()}))
-    
-    if("Featuring" %in% available_info) {
-      
-      # check to see if there's a show more button 
-      # if so, click it
-      webElem <- tryCatch({ #AAAAAAAAAAAAAAAARRRRRRRRRGGGGGHHHHHHHHHHHHHHHH
-        browser$findElements(
-          using = "xpath",
-          value = "/html/body/routable-page/ng-outlet/song-page/div/div/header-with-cover-art/div/div/div[1]/div[2]/div/ng-transclude/metadata/h3[1]/expandable-list/div/span[2]/span[4]/a"
-          )
-      }, error = function(e) {
-        webElem <- NA
-      }, warning = function(w) {
-        webElem <- NA
-      })
-      
-      if(!identical(webElem, vector("list", 0L))) {
-        webElem[[1]]$clickElement()
-        Sys.sleep(7)
-      }      
-      
-      # find the collaborator names
-      webElems <- browser$findElements(
+    # check to see if there's a show more button 
+    # if so, click it
+    webElem <- tryCatch({ #AAAAAAAAAAAAAAAARRRRRRRRRGGGGGHHHHHHHHHHHHHHHH
+      browser$findElements(
         using = "xpath",
-        value = "/html/body/routable-page/ng-outlet/song-page/div/div/header-with-cover-art/div/div/div[1]/div[2]/div/ng-transclude/metadata/h3[1]/expandable-list/div/span[2]/span"
+        value = "/html/body/routable-page/ng-outlet/song-page/div/div/header-with-cover-art/div/div/div[1]/div[2]/div/ng-transclude/metadata/h3[1]/expandable-list/div/span[2]/span[4]/a"
       )
-      collaborators <- 
-        unlist(lapply(webElems, function(x){x$getElementText()})) %>% 
-        gsub(",", "", .) %>% 
-        gsub(" &", "", .)
-      
-    } else {
-      collaborators <- NA
-    }
+    }, error = function(e) {
+      webElem <- NA
+    }, warning = function(w) {
+      webElem <- NA
+    })
     
-    return(list(lyrics = lyrics,
-                title = title, 
-                collaborators = list(collaborators)))
+    if(!identical(webElem, vector("list", 0L))) {
+      webElem[[1]]$clickElement()
+      Sys.sleep(15)
+    }      
+    
+    # find the collaborator names
+    webElems <- browser$findElements(
+      using = "xpath",
+      value = "/html/body/routable-page/ng-outlet/song-page/div/div/header-with-cover-art/div/div/div[1]/div[2]/div/ng-transclude/metadata/h3[1]/expandable-list/div/span[2]/span"
+    )
+    collaborators <- 
+      unlist(lapply(webElems, function(x){x$getElementText()})) %>% 
+      gsub(",", "", .) %>% 
+      gsub(" &", "", .)
+    
+  } else {
+    collaborators <- NA
+  }
+  
+  return(list(lyrics = lyrics,
+              title = title, 
+              actual_artist = actual_artist,
+              collaborators = list(collaborators)))
 }
 
 
