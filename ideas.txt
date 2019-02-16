@@ -1,4 +1,8 @@
+- Most used words:
+  - Overall
+  - In Grammy-winning and Billboard Top 100 songs/albums
+- Network graph of who's collaborating with who
 - First appearance of a word before its usage increases above a threshold
-- Most used words in Grammy-winning and Billboard Top 100 songs/albums
-- Trends of sepcific words or themes in all songs and in individual artists
+- Trends of secific words or themes in all songs and in individual artists
 - Relationship between lexicon and geographical location
+- More artists
