@@ -2,33 +2,29 @@
 
 install.packages("data.table")
 install.packages("tidytext")
-<<<<<<< HEAD
-=======
 library(data.table)
 library(tidytext)
+library(tidyverse)
 library(dplyr)
 
-setwd("/Users/zacharysnoek/Programming/r")
+setwd("/Users/zacharysnoek/Programming/r/rap-data")
 
-#fwrite(lyricsDB, "test_set.csv", row.names = FALSE)
-foo <- fread("test_set.csv", sep2 = "|")
-foo[, collaborators := NULL]
+# Load dataset
+initial <- fread("dataset_0.csv", sep2 = "|")
+initial[, collaborators := NULL]
 
 # String cleaning
-foo <- foo %>% 
+initial <- initial %>% 
   mutate(lyrics = gsub("\\[.*?\\]", "", lyrics)) %>%
   mutate(lyrics = gsub("\\(.*?\\)", "", lyrics)) %>%
   mutate(lyrics = gsub("\\\\", "", lyrics))
 
-#==================
-# tidytext fun
-#==================
-text <- foo %>% 
+text <- initial %>% 
   pull(lyrics)
-lyrics_df <- as_tibble(text)
+#lyrics_df <- as_tibble(text)
 
 # Break text into individual tokens
-lyrics_df <- lyrics_df %>%
+lyrics_df <- as_tibble(text) %>%
   unnest_tokens(word, value)
 
 lyrics_df
@@ -38,48 +34,27 @@ data("stop_words")
 lyrics_df <- lyrics_df %>%
   anti_join(stop_words)
 
-# Simple word count
-lyrics_df <- lyrics_df %>%
-  count(word, sort = TRUE)
-
-lyrics_df
->>>>>>> 2ca0af2564eeceef330845dac9af100153b55aed
-library(data.table)
-library(tidytext)
-library(dplyr)
-
-setwd("/Users/zacharysnoek/Programming/r")
-
-#fwrite(lyricsDB, "test_set.csv", row.names = FALSE)
-foo <- fread("test_set.csv", sep2 = "|")
-foo[, collaborators := NULL]
-
-# String cleaning
-foo <- foo %>% 
-  mutate(lyrics = gsub("\\[.*?\\]", "", lyrics)) %>%
-  mutate(lyrics = gsub("\\(.*?\\)", "", lyrics)) %>%
-  mutate(lyrics = gsub("\\\\", "", lyrics))
-
-#==================
-# tidytext fun
-#==================
-text <- foo %>% 
-  pull(lyrics)
-lyrics_df <- as_tibble(text)
-
-# Break text into individual tokens
-lyrics_df <- lyrics_df %>%
-  unnest_tokens(word, value)
-
 lyrics_df
 
-# Remove stop words
-data("stop_words")
-lyrics_df <- lyrics_df %>%
-  anti_join(stop_words)
+# Include to filter out naughty words
+#'%ni%' <- Negate('%in%')
+#nsfw <- c("bitch", "bitches", "fuck", "fuckin", "shit", "damn", 
+#          "pussy", "nigga", "niggas", "ass", "dick")
+#lyrics_df <- filter(lyrics_df, word %ni% nsfw)
 
 # Simple word count
-lyrics_df <- lyrics_df %>%
+word_count <- lyrics_df %>%
   count(word, sort = TRUE)
 
-lyrics_df
+# Test bar plot of first 50 most occurring words
+head <- word_count[1:50,]
+
+head$word <- as.vector(head$word) #get rid of factors
+head$word = factor(head$word,head$word) #add ordered factors back
+
+ggplot(head, aes(x = word, y = n)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 65, hjust = 1))
+
+setwd("/Users/zacharysnoek/Programming/r/rap-analyses/png")
+ggsave("most-occurring-head.png")
