@@ -1,3 +1,6 @@
+# https://jokergoo.github.io/circlize_book/book/the-chorddiagram-function.html
+# https://www.r-graph-gallery.com/network/
+
 install.packages("circlize")
 library(circlize)
 
@@ -15,6 +18,12 @@ small_artist_list <- c(
   "Andy Samberg",
   "J. Cole")
 
+
+#---------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
+# Chord diagram (the circle one)
+#---------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 collab <- 
   lyricsDB %>% 
   filter(., collaborators != "NA") %>% 
@@ -23,7 +32,7 @@ collab <-
   filter(., artist %in% small_artist_list) %>% 
   group_by(artist, collaborators) %>% 
   summarise(n = n()) %>% 
-  filter(n > 10)
+  filter(n > 5)
 
 collab
 
@@ -31,3 +40,33 @@ unique(collab$artist)
 
 chordDiagram(collab)
 circos.clear()
+
+
+
+
+#---------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
+# Network diagrams
+#---------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
+install.packages("networkD3")
+library(networkD3)
+
+foonet <- 
+  lyricsDB %>% 
+  filter(., collaborators != "NA") %>% 
+  select(artist, collaborators) %>% 
+  unnest() %>% 
+  filter(., artist %in% small_artist_list) %>% 
+  group_by(artist, collaborators) %>% 
+  summarise(n = n()) %>% 
+  filter(n >= 2)
+
+foonet
+
+simpleNetwork(
+  foonet,
+  linkDistance = 120,
+  linkColour = "green",
+  nodeColour = "blue"
+)
