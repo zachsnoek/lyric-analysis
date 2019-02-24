@@ -7,6 +7,7 @@ library(dplyr)
 
 # Location of rap data
 dataDir = "/Users/zacharysnoek/Programming/r/rap-data"
+dataSet = "dataset_1.csv"
 # Location of plots script
 plotsScript = "/Users/zacharysnoek/Programming/r/rap-analyses/plots.R"
 # Output directory of plots
@@ -16,7 +17,7 @@ source(plotsScript)
 setwd(dataDir)
 
 # Load dataset
-initial <- fread("dataset_0.csv", sep2 = "|")
+initial <- fread(dataSet, sep2 = "|")
 initial[, collaborators := NULL]
 
 # String cleaning
@@ -28,6 +29,6 @@ initial <- initial %>%
 # Create a list of unique artsts
 artists <- initial$artist %>% unique()
 # Use a small subset to test with
-artists <- artists[1:10]
+#artists <- artists[1:10]
 
 simple_wordCount(artists, 50, output)
