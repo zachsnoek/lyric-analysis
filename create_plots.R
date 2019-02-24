@@ -11,7 +11,7 @@ dataSet = "dataset_1.csv"
 # Location of plots script
 plotsScript = "/Users/zacharysnoek/Programming/r/rap-analyses/plots.R"
 # Output directory of plots
-output = "/Users/zacharysnoek/Programming/r/rap-analyses/png"
+output = "/Users/zacharysnoek/Programming/r/rap-analyses/png/word-count"
 
 source(plotsScript)
 setwd(dataDir)
