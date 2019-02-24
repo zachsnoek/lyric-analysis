@@ -1,4 +1,4 @@
-source("functions.R")
+source("scrape_functions.R")
 
 
 
@@ -29,16 +29,13 @@ artist_urls <- make_artist_urls(chrome)
 
 
 
-chosen <- c("Tupac Shakur", 
-            "The Notorious BIG", 
-            "Dr Dre",
-            "Eminem", 
-            "Kendrick Lamar",
-            "Black Thought", 
-            "Lil Wayne",
-            "Nicki Minaj",
-            "Andy Samberg",
-            "J Cole") %>% 
+chosen <- c("Drake", 
+            "Common",
+            "Anderson Paak",
+            "J Dilla",
+            "Ice Cube",
+            "21 Savage",
+            "Lecrae") %>% 
   match(., artist_list)
 
 small_artist_list <- artist_list[chosen]
