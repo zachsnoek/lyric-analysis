@@ -16,8 +16,14 @@ small_artist_list <- c(
   "Lil Wayne",
   "Nicki Minaj",
   "Andy Samberg",
-  "J. Cole")
-
+  "J. Cole",
+  "Drake", 
+  "Common",
+  "Anderson Paak",
+  "J Dilla",
+  "Ice Cube",
+  "21 Savage",
+  "Lecrae")
 
 #---------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------
@@ -66,7 +72,9 @@ foonet
 
 simpleNetwork(
   foonet,
-  linkDistance = 120,
+  # linkDistance = 120,
   linkColour = "green",
-  nodeColour = "blue"
+  nodeColour = "blue",
+  opacity = 1,
+  zoom = TRUE
 )
