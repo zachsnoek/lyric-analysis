@@ -1,9 +1,8 @@
-install.packages("data.table")
-install.packages("tidytext")
+# install.packages("data.table")
+# install.packages("tidytext")
 library(data.table)
 library(tidytext)
 library(tidyverse)
-library(dplyr)
 
 # Location of rap data
 dataDir = "/Users/zacharysnoek/Programming/r/rap-data"
