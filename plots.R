@@ -44,3 +44,24 @@ simple_wordCount <- function(data, n, outputDir) {
     ggsave(filename)
   }
 }
+
+simple_wordCountRefactor <- function(data, rapper, n) {
+  # Count unique words for the rapper
+  word_count <- data %>%
+    count(word, sort = TRUE)
+  
+  # Create a bar plot of first 50 most occurring words
+  head <- word_count[1:n,]
+  
+  # Do some stuff to sort the x axis correctly
+  head$word <- as.vector(head$word) #get rid of factors
+  head$word = factor(head$word,head$word) #add ordered factors back
+  
+  ggplot(head, aes(x = word, y = n)) +
+    geom_bar(stat = "identity") +
+    coord_flip()
+  
+  filename <- "x.png"
+  filename <- gsub("x", rapper, filename)
+  ggsave(filename)
+}
