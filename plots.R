@@ -18,7 +18,8 @@ simple_wordCount <- function(data, rapper, n) {
   savePlot(rapper)
 }
 
-simple_netSentiment <- function(data) {
+# Net sentiment of an artist's words
+netSentiment <- function(data, rapper) {
   #nrc_sad <- get_sentiments("nrc") %>%
     #filter(sentiment == "bing")
   
@@ -48,6 +49,7 @@ simple_netSentiment <- function(data) {
   ) 
 }
 
+# Top 10 most common positive and negative words
 mostCommonPosNegWords <- function(data, rapper) {
   tryCatch(
     {
@@ -76,9 +78,47 @@ mostCommonPosNegWords <- function(data, rapper) {
   )
 }
 
-# Helper function
+# Word cloud of top 100 most used words
+wordCloud <- function(data, rapper) {
+  data %>%
+    anti_join(stop_words) %>%
+    count(word) %>%
+    with(wordcloud(word, n, max.words = 100))
+  
+  saveAsPDF(rapper)
+}
+
+# Comparison cloud of most positive and negative words
+comparisonCloud <- function(data, rapper) {
+  tryCatch(
+    {
+      data %>%
+        inner_join(get_sentiments("bing")) %>%
+        count(word, sentiment, sort = TRUE) %>%
+        acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+        comparison.cloud(colors = c("gray20", "gray80"),
+                         max.words = 100)
+      
+      saveAsPDF(rapper)
+    },
+    error = function(error_message) {
+      message(error_message)
+      return(NA)
+    }
+  ) 
+}
+
+# Helper functions
 savePlot <- function(rapper) {
   filename <- "x.png"
   filename <- gsub("x", rapper, filename)
   ggsave(filename)
+}
+
+saveAsPDF <- function(rapper) {
+  #TODO Figure out how to save as PNG
+  filename <- "x.pdf"
+  filename <- gsub("x", rapper, filename)
+  dev.print(pdf, filename)
+  dev.off()
 }

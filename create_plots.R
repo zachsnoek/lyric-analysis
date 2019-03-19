@@ -1,10 +1,14 @@
-# install.packages("data.table")
-# install.packages("tidytext")
+install.packages("data.table")
+install.packages("tidytext")
+install.packages("wordcloud")
+install.packages("reshape2")
 library(data.table)
 library(tidytext)
 library(tidyverse)
 library(dplyr)
 library(stringr)
+library(wordcloud)
+library(reshape2)
 
 # Location of rap data
 dataDir = "/Users/zacharysnoek/Programming/r/rap-analyses/csv"
@@ -18,6 +22,8 @@ baseDir = "/Users/zacharysnoek/Programming/r/rap-analyses/png/"
 wordCountDir = paste(baseDir, "word-count", sep="")
 netSentimentDir = paste(baseDir, "net-sentiment", sep="")
 mostCommonPosNegWordsDir = paste(baseDir, "most-common-pos-neg-words", sep="")
+wordCloudDir = paste(baseDir, "word-cloud", sep="")
+comparisonCloudDir = paste(baseDir, "comparison-cloud", sep="")
 
 source(plotsScript)
 setwd(dataDir)
@@ -59,16 +65,28 @@ for (i in 1:length(artists)) {
   #          "pussy", "nigga", "niggas", "ass", "dick")
   #lyrics_df <- filter(lyrics_df, word %ni% nsfw)
   
+  #===================================================================
+  # The code below creates each type of plot; uncomment when necessary
+  #===================================================================
+  
   #======= WORD COUNT =======#
   #setwd(wordCountDir)
   #simple_wordCount(lyrics_df, rapper, 50)
   
   #======= SENTIMENT ANALYSIS =======#
   #setwd(netSentimentDir)
-  #simple_netSentiment(lyrics_df)
+  #netSentiment(lyrics_df, rapper)
   
   #======= MOST COMMON POS AND NEG WORDS =======#
   #setwd(mostCommonPosNegWordsDir)
   #mostCommonPosNegWords(lyrics_df, rapper)
+  
+  #======= WORD CLOUD =======#
+  #setwd(wordCloudDir)
+  #wordCloud(lyrics_df, rapper)
+  
+  #======= COMPARISON CLOUD =======#
+  #setwd(comparisonCloudDir)
+  #comparisonCloud(lyrics_df, rapper)
 }
 
