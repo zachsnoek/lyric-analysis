@@ -15,9 +15,7 @@ simple_wordCount <- function(data, rapper, n) {
     geom_bar(stat = "identity") +
     coord_flip()
   
-  filename <- "x.png"
-  filename <- gsub("x", rapper, filename)
-  ggsave(filename)
+  savePlot(rapper)
 }
 
 simple_netSentiment <- function(data) {
@@ -69,13 +67,18 @@ mostCommonPosNegWords <- function(data, rapper) {
         labs(y = "Contibution to sentiment", x = NULL) +
         coord_flip()
       
-      filename <- "x.png"
-      filename <- gsub("x", rapper, filename)
-      ggsave(filename)
+      savePlot(rapper)
     }, 
     error = function(error_message) {
       message(error_message)
       return(NA)
     }
   )
+}
+
+# Helper function
+savePlot <- function(rapper) {
+  filename <- "x.png"
+  filename <- gsub("x", rapper, filename)
+  ggsave(filename)
 }

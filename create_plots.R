@@ -68,7 +68,7 @@ for (i in 1:length(artists)) {
   #simple_netSentiment(lyrics_df)
   
   #======= MOST COMMON POS AND NEG WORDS =======#
-  setwd(mostCommonPosNegWordsDir)
-  mostCommonPosNegWords(lyrics_df, rapper)
+  #setwd(mostCommonPosNegWordsDir)
+  #mostCommonPosNegWords(lyrics_df, rapper)
 }
 
