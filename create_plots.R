@@ -3,6 +3,8 @@
 library(data.table)
 library(tidytext)
 library(tidyverse)
+library(dplyr)
+library(stringr)
 
 # Location of rap data
 dataDir = "/Users/zacharysnoek/Programming/r/rap-analyses/csv"
@@ -30,8 +32,6 @@ artists <- initial$artist %>% unique()
 # Use a small subset to test with
 #artists <- artists[1:10]
 
-#simple_wordCount(artists, 50, outputDir)
-
 setwd(outputDir)
 
 for (i in 1:length(artists)) {
@@ -56,6 +56,11 @@ for (i in 1:length(artists)) {
   #          "pussy", "nigga", "niggas", "ass", "dick")
   #lyrics_df <- filter(lyrics_df, word %ni% nsfw)
   
-  simple_wordCountRefactor(lyrics_df, rapper, 50)
+  #======= WORD COUNT =======#
+  #simple_wordCount(lyrics_df, rapper, 50)
+  
+  #======= SENTIMENT ANALYSIS =======#
+  print(rapper)
+  simple_netSentiment(lyrics_df)
 }
 
