@@ -32,6 +32,7 @@ simple_netSentiment <- function(data) {
   
   # Added tryCatch as temporary fix because Jewell was throwing 
   # "Evaluation error: object 'positive' not found.[1] NA" message
+  
   tryCatch(
     {
       netSentiment <- data %>%
@@ -39,11 +40,42 @@ simple_netSentiment <- function(data) {
         count(word, sentiment) %>%
         spread(sentiment, n, fill = 0 ) %>%
         mutate(sentiment = positive - negative)
-      print(netSentiment)
+      #print(netSentiment)
+      #TODO CREATE PLOT
     },
     error = function(error_message) {
       message(error_message)
       return(NA)
     }
-  )  
+  ) 
+}
+
+mostCommonPosNegWords <- function(data, rapper) {
+  tryCatch(
+    {
+      bing_word_counts <- data %>%
+        inner_join(get_sentiments("bing")) %>%
+        count(word, sentiment, sort = TRUE) %>%
+        ungroup()
+      
+      bing_word_counts %>%
+        group_by(sentiment) %>%
+        top_n(10) %>%
+        ungroup() %>%
+        mutate(word = reorder(word, n)) %>%
+        ggplot(aes(word, n, fill = sentiment)) +
+        geom_col(show.legend = FALSE) +
+        facet_wrap(~sentiment, scales = "free_y") +
+        labs(y = "Contibution to sentiment", x = NULL) +
+        coord_flip()
+      
+      filename <- "x.png"
+      filename <- gsub("x", rapper, filename)
+      ggsave(filename)
+    }, 
+    error = function(error_message) {
+      message(error_message)
+      return(NA)
+    }
+  )
 }

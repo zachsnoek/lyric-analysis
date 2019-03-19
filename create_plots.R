@@ -9,10 +9,15 @@ library(stringr)
 # Location of rap data
 dataDir = "/Users/zacharysnoek/Programming/r/rap-analyses/csv"
 dataSet = "dataset_1.csv"
+
 # Location of plots script
 plotsScript = "/Users/zacharysnoek/Programming/r/rap-analyses/plots.R"
+
 # Output directory of plots
-outputDir = "/Users/zacharysnoek/Programming/r/rap-analyses/png/word-count"
+baseDir = "/Users/zacharysnoek/Programming/r/rap-analyses/png/"
+wordCountDir = paste(baseDir, "word-count", sep="")
+netSentimentDir = paste(baseDir, "net-sentiment", sep="")
+mostCommonPosNegWordsDir = paste(baseDir, "most-common-pos-neg-words", sep="")
 
 source(plotsScript)
 setwd(dataDir)
@@ -31,8 +36,6 @@ initial <- initial %>%
 artists <- initial$artist %>% unique()
 # Use a small subset to test with
 #artists <- artists[1:10]
-
-setwd(outputDir)
 
 for (i in 1:length(artists)) {
   # Get the lyrics for each rapper
@@ -57,10 +60,15 @@ for (i in 1:length(artists)) {
   #lyrics_df <- filter(lyrics_df, word %ni% nsfw)
   
   #======= WORD COUNT =======#
+  #setwd(wordCountDir)
   #simple_wordCount(lyrics_df, rapper, 50)
   
   #======= SENTIMENT ANALYSIS =======#
-  print(rapper)
-  simple_netSentiment(lyrics_df)
+  #setwd(netSentimentDir)
+  #simple_netSentiment(lyrics_df)
+  
+  #======= MOST COMMON POS AND NEG WORDS =======#
+  setwd(mostCommonPosNegWordsDir)
+  mostCommonPosNegWords(lyrics_df, rapper)
 }
 
